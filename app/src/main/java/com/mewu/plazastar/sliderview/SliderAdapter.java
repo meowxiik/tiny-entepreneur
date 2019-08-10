@@ -10,19 +10,27 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.mewu.plazastar.FullscreenActivity;
+import com.mewu.plazastar.MainActivity;
 import com.mewu.plazastar.GameState;
 import com.mewu.plazastar.Library;
 import com.mewu.plazastar.R;
 import com.mewu.plazastar.utils.Numbers;
 
+import java.util.List;
+
 public class SliderAdapter extends RecyclerView.Adapter<SliderView>  {
 
-    FullscreenActivity mParent;
+    MainActivity mParent;
 
-    public SliderAdapter(FullscreenActivity parent) {
+    List<Integer> Content;
+
+    public SliderAdapter(MainActivity parent) {
         this.mParent = parent;
 
+    }
+
+    public void SetContent(List<Integer> content){
+        Content = content;
     }
 
     @NonNull
@@ -37,30 +45,32 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderView>  {
 
         long price;
 
-        if (mParent.shopMode == FullscreenActivity.ShopMode.Buildings){
-            price = Library.Prices.get(position);
+        int itemId = Content.get(position);
+
+        if (mParent.shopMode == MainActivity.ShopMode.Buildings){
+            price = Library.Prices.get(itemId);
             holder.price.setText(Numbers.HumanizeNumber(price) + " $");
-            holder.image.setImageDrawable(Library.Textures.get(position).getConstantState().newDrawable());
-            holder.name.setText(Library.Names.get(position));
-            holder.desc.setText(Library.Descriptions.get(position));
+            holder.image.setImageDrawable(Library.Textures.get(itemId).getConstantState().newDrawable());
+            holder.name.setText(Library.Names.get(itemId));
+            holder.desc.setText(Library.Descriptions.get(itemId));
         }
         else {
-            price = Library.EmployeePrices.get(position);
+            price = Library.EmployeePrices.get(itemId);
             holder.price.setText(Numbers.HumanizeNumber(price) + " $");
-            holder.image.setImageDrawable(Library.EmployeesTextures.get(position).getConstantState().newDrawable());
-            holder.name.setText(Library.EmployeeNames.get(position));
-            holder.desc.setText(Library.EmployeeDescriptions.get(position));
+            holder.image.setImageDrawable(Library.EmployeesTextures.get(itemId).getConstantState().newDrawable());
+            holder.name.setText(Library.EmployeeNames.get(itemId));
+            holder.desc.setText(Library.EmployeeDescriptions.get(itemId));
         }
 
         if (GameState.Instance.Money >= price) {
             holder.button.setEnabled(true);
 
-            if (mParent.shopMode == FullscreenActivity.ShopMode.Buildings){
-                holder.button.setOnClickListener(view -> buy(position));
-                holder.image.setOnClickListener(view -> buy(position));
+            if (mParent.shopMode == MainActivity.ShopMode.Buildings){
+                holder.button.setOnClickListener(view -> buy(itemId));
+                holder.image.setOnClickListener(view -> buy(itemId));
             }else {
-                holder.button.setOnClickListener(view -> buyEmployee(position));
-                holder.image.setOnClickListener(view -> buyEmployee(position));
+                holder.button.setOnClickListener(view -> buyEmployee(itemId));
+                holder.image.setOnClickListener(view -> buyEmployee(itemId));
             }
 
         } else {
@@ -84,13 +94,7 @@ public class SliderAdapter extends RecyclerView.Adapter<SliderView>  {
     @Override
     public int getItemCount()
     {
-
-        if (mParent.shopMode == FullscreenActivity.ShopMode.Buildings){
-            return Library.IDMAX + 1;
-        }
-        else {
-            return Library.EmployeesTextures.size();
-        }
+        return Content.size();
     }
 }
 

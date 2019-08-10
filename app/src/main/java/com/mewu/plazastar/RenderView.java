@@ -29,7 +29,7 @@ import java.util.Random;
 public class RenderView extends View {
 
     // Global use variables
-    public FullscreenActivity Parent;
+    public MainActivity Parent;
     public Matrix CanvasMatrix = new Matrix();
     private Random mRandom = new Random();
 

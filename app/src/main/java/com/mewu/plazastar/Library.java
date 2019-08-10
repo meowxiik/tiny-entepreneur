@@ -7,7 +7,9 @@ import android.util.SparseIntArray;
 
 import com.mewu.plazastar.utils.Point;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 enum Environment {
     Day, Night
@@ -54,6 +56,7 @@ public class Library {
     public static final int IDTechStore     = 8;
     public static final int IDJewelry       = 9;
     public static final int IDMagicStore    = 10;
+    public static final int IDElevator    = 11;
 
     public static final int IDMAX = 10;
 
@@ -61,10 +64,12 @@ public class Library {
     public static final SparseIntArray EmployeePrices = new SparseIntArray();
     public static SparseArray<String> EmployeeNames = new SparseArray<>();
     public static SparseArray<String> EmployeeDescriptions = new SparseArray<>();
-    public static SparseArray<Float> EmployeeBonuses = new SparseArray<>();
     public static SparseArray<Float> EmployeeTaps = new SparseArray<>();
 
-    public static void Prepare(FullscreenActivity activity){
+    public static List<Integer> AllShops = Arrays.asList(0, 1, 2, 11, 3, 4, 5, 6, 7, 8, 9, 10);
+    public static List<Integer> AllEmployees = Arrays.asList(0, 1);
+
+    public static void Prepare(MainActivity activity){
         CreateDepartment(activity, 0,  "Lemonade stand", "+1$ / tap", 20, 1, R.drawable.shop_lemonade);
         CreateDepartment(activity, 1,  "WacDonalds", "+2$ / tap", 200, 2, R.drawable.shop_fast_food);
         CreateDepartment(activity, 2,  "Clothe's shop", "+5$ / tap", 500, 5, R.drawable.shop_clothes);
@@ -76,6 +81,7 @@ public class Library {
         CreateDepartment(activity, 8,  "uStore", "+100$ / tap", 10000000000L, 100, R.drawable.shop_ustore);
         CreateDepartment(activity, 9,  "Thief's", "+1K$ / tap", 50000000000L, 1000, R.drawable.shop_jewelry);
         CreateDepartment(activity, 10,  "Mystery Store", "+2K$ / tap", 1000000000000L, 2000, R.drawable.shop_mystery);
+        CreateDepartment(activity, 11,  "Elevator", "More floors!", 1000, 0, R.drawable.misc_elevator);
 
         CreateBackground(activity, Environment.Day, R.drawable.bg_day, R.drawable.misc_ground_day);
         CreateBackground(activity, Environment.Night, R.drawable.bg_night, R.drawable.misc_ground_day);
@@ -103,11 +109,11 @@ public class Library {
         Incomes.put(-1, 0);
         Bonuses.put(-1, 0f);
 
-        CreateEmployee(activity, 0, "Emma", "+0.1 taps / s", 1000, 0.1f, 0f, R.drawable.employee_cashier);
-        CreateEmployee(activity, 1, "Josh", "+5% / tap", 5000, 0f, 0.05f, R.drawable.employee_bouncer);
+        CreateEmployee(activity, 0, "Emma", "+0.1 taps / s", 1000, 0.1f, R.drawable.employee_cashier);
+        CreateEmployee(activity, 1, "Josh", "+100 taps / s", 100000, 100f,  R.drawable.employee_bouncer);
     }
 
-    private static void CreateDepartment(FullscreenActivity activity, int id, String name, String description, long price, int income, float bonus, int drawableId){
+    private static void CreateDepartment(MainActivity activity, int id, String name, String description, long price, int income, float bonus, int drawableId){
         Drawable image = Load(activity, drawableId);
         Textures.put(id, image);
         Names.put(id, name);
@@ -117,17 +123,17 @@ public class Library {
         Bonuses.put(id, bonus);
     }
 
-    private static void CreateDepartment(FullscreenActivity activity,int id, String name, String description, long price, int income, int drawableId){
+    private static void CreateDepartment(MainActivity activity, int id, String name, String description, long price, int income, int drawableId){
         CreateDepartment(activity, id, name, description, price, income, 0f,  drawableId);
     }
 
-    private static void CreateBackground(FullscreenActivity activity, Environment type, int bgDrawableId, int groundDrawableId){
+    private static void CreateBackground(MainActivity activity, Environment type, int bgDrawableId, int groundDrawableId){
         Backgrounds.put(type, Load(activity, bgDrawableId));
         Grounds.put(type, Load(activity, groundDrawableId));
     }
 
     private static int nextPersonId = 0;
-    private static void CreatePerson(FullscreenActivity activity, int size, int textureId1, int textureId2, int textureId3, int textureId4){
+    private static void CreatePerson(MainActivity activity, int size, int textureId1, int textureId2, int textureId3, int textureId4){
         int id = nextPersonId;
 
         Drawable[] animation = new Drawable[4];
@@ -142,7 +148,7 @@ public class Library {
         nextPersonId++;
     }
 
-    private static Drawable Load(FullscreenActivity activity, int drawableId){
+    private static Drawable Load(MainActivity activity, int drawableId){
         Drawable image;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             image = activity.getDrawable(drawableId);
@@ -154,13 +160,10 @@ public class Library {
 
     public static boolean HasElevator(int roomId){
         switch (roomId){
-            case IDLemonadeStand:
-            case IDFastFood:
-            case IDResidentRoom:
-            case IDConstruction:
-                return false;
-            default:
+            case IDElevator:
                 return true;
+            default:
+                return false;
         }
     }
 
@@ -187,13 +190,11 @@ public class Library {
         return 0.6f;
     }
 
-
-    private static void CreateEmployee(FullscreenActivity activity, int id, String name, String description, int price, float taps, float bonus, int resourceId){
+    private static void CreateEmployee(MainActivity activity, int id, String name, String description, int price, float taps, int resourceId){
         EmployeePrices.put(id, price);
         EmployeesTextures.put(id, Load(activity, resourceId));
         EmployeeNames.put(id, name);
         EmployeeDescriptions.put(id, description);
         EmployeeTaps.put(id, taps);
-        EmployeeBonuses.put(id, bonus);
     }
 }

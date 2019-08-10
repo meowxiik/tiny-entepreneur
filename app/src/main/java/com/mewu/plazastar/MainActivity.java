@@ -20,10 +20,12 @@ import com.mewu.plazastar.utils.Point;
 import com.mewu.plazastar.sliderview.SliderAdapter;
 import com.mewu.plazastar.sliderview.SliderLayoutManager;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
-public class FullscreenActivity extends Activity {
+public class MainActivity extends Activity {
 
 
     public enum ShopMode {
@@ -35,6 +37,7 @@ public class FullscreenActivity extends Activity {
     TextView mMoneyView;
 
     RecyclerView mShop;
+    SliderAdapter mSliderAdapter;
     ConstraintLayout mShopLayout;
 
     Button mBuildButton;
@@ -131,6 +134,7 @@ public class FullscreenActivity extends Activity {
             mRenderView.createRandomMoney(income);
 
         mMoneyView.setText(Numbers.HumanizeNumber(GameState.Instance.Money) + " $");
+
         Story.Update(this);
     }
 
@@ -138,12 +142,16 @@ public class FullscreenActivity extends Activity {
     private void setupPicker() {
         mShop.setLayoutManager(new SliderLayoutManager(this));
         mShop.setAdapter(new SliderAdapter(this));
+        mSliderAdapter = (SliderAdapter) mShop.getAdapter();
     }
 
     public void OpenDepartmentStore(int x, int y) {
         shopMode = ShopMode.Buildings;
         ShoppingLocation = new Point(x, y);
-        mShop.getAdapter().notifyDataSetChanged();
+
+        mSliderAdapter.SetContent(GameState.Instance.GetPossibleDepartments(x, y));
+        mSliderAdapter.notifyDataSetChanged();
+
         mShopLayout.setVisibility(View.VISIBLE);
     }
 
@@ -153,7 +161,10 @@ public class FullscreenActivity extends Activity {
         mBuyPeople.setVisibility(View.GONE);
 
         shopMode = ShopMode.People;
-        mShop.getAdapter().notifyDataSetChanged();
+
+        mSliderAdapter.SetContent(Library.AllEmployees);
+        mSliderAdapter.notifyDataSetChanged();
+
         mShopLayout.setVisibility(View.VISIBLE);
     }
 

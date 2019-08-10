@@ -73,7 +73,6 @@ public class GameState {
 
         AutoTapsPerSecond = 0;
         for (Integer employee : Employees){
-            PerTapBonus += Library.EmployeeBonuses.get(employee);
             AutoTapsPerSecond += Library.EmployeeTaps.get(employee);
         }
 
@@ -118,7 +117,7 @@ public class GameState {
     public List<Point> GetExpansions(){
         List<Point> buildable = new ArrayList<>();
 
-        for(Map.Entry<Point, Integer> shop : HotelMap.entrySet()){
+        /*for(Map.Entry<Point, Integer> shop : HotelMap.entrySet()){
             Point location = shop.getKey();
             int id = shop.getValue();
 
@@ -130,7 +129,7 @@ public class GameState {
             Point left = new Point(location.X - 1, location.Y);
             Point right = new Point(location.X + 1, location.Y);
 
-            if (!HotelMap.containsKey(left) && Library.IsBuilding(id) && !buildable.contains(left) && Owned.P1 <= left.X)
+            if (!HotelMap.containsKey(left) && Library.IsBuilding(id) && !buildable.contains(left) && Owned.P1 <= left.X && )
                 buildable.add(left);
 
             if (!HotelMap.containsKey(right) && Library.IsBuilding(id) && !buildable.contains(right) && Owned.P2 >= right.X)
@@ -148,9 +147,89 @@ public class GameState {
                 continue;
 
             buildable.add(p);
+        }*/
+
+        for (int x = Owned.P1; x <= Owned.P2; x++){
+
+            boolean searching = true;
+            int y = 0;
+
+            while(searching){
+                searching = false;
+
+                Point p = new Point(x, y);
+
+                if (HotelMap.containsKey(p)){
+                    int id = HotelMap.get(p);
+
+                    if (Library.HasElevator(id)){
+                        searching = true;
+                        y++;
+                        continue;
+                    }
+                    else if (Library.IsBuilding(id)){
+
+                        if (id == Library.IDConstruction){
+                            buildable.add(p);
+                        }
+
+                        Point left = new Point(x + 1, y + 1);
+                        Point right = new Point(x - 1, y + 1);
+
+                        if (HotelMap.containsKey(left) || HotelMap.containsKey(right)){
+                            searching = true;
+                            y++;
+                            continue;
+                        }
+
+                    }
+                }
+                else {
+                    buildable.add(p);
+                }
+            }
         }
 
         return buildable;
+    }
+
+    public List<Integer> GetPossibleDepartments(int x, int y){
+        List<Integer> departments = new ArrayList<>();
+
+        for (int department : Library.AllShops) {
+
+            double price = Library.Prices.get(department);
+
+            if (Money * 2 < price)
+                continue;
+
+            if (y > 0){
+                if (department == Library.IDElevator){
+                    if (HotelMap.get(new Point(x, y - 1)) == Library.IDElevator){
+                        departments.add(department);
+                        continue;
+                    }
+                    else {
+                        continue;
+                    }
+                }
+                else {
+                    if (HotelMap.get(new Point(x, y - 1)) == Library.IDElevator){
+                        continue;
+                    }
+                    else {
+                        departments.add(department);
+                        continue;
+                    }
+                }
+            }
+            else{
+                departments.add(department);
+                continue;
+            }
+        }
+
+        return departments;
     }
 
     public void Deconstruct(Point p){

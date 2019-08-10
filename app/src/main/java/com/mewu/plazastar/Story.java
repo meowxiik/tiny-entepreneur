@@ -12,7 +12,7 @@ public class Story {
 
     private static int counter;
 
-    public static void Update(FullscreenActivity activity){
+    public static void Update(MainActivity activity){
 
         switch (Level){
             case 0:
@@ -22,7 +22,7 @@ public class Story {
                 break;
             case 1:
                 counter++;
-                if (counter == 20) {
+                if (counter == 2) {
                     createDialog(activity, "Tap on your store to earn money!", "Ok!", (dialogInterface, i) -> Level = 2);
                     LoadSave.SaveStory(2);
                     Level = -1;
@@ -30,7 +30,7 @@ public class Story {
                 }
                 break;
             case 2:
-                if (GameState.Instance.Money >= 100){
+                if (GameState.Instance.Money >= 20){
                     createDialog(activity, "Now you have enough money and can expand!", "Ok!", (dialogInterface, i) -> Level = 3);
                     LoadSave.SaveStory(3);
                     Level = -1;
@@ -38,7 +38,7 @@ public class Story {
                 break;
             case 3:
                 counter++;
-                if (counter == 20) {
+                if (counter == 2) {
                     createDialog(activity, "Tap on the icon of the bulldozer in the bottom right screen!", "Ok!", (dialogInterface, i) -> Level = 4);
                     LoadSave.SaveStory(4);
                     Level = 4;
